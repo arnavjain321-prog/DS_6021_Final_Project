@@ -21,5 +21,5 @@ This project analyzes how socioeconomic and demographic factors relate to SNAP (
 4. Requires Python 3.11+ with pandas, numpy, sklearn, seaborn, matplotlib  
 
 ## Authors
-Arnav Jain, Shawn Ding, Aeon Levy  
+Arnav Jain, Shawn Ding, Aeon Levy, Grace George, Razan Habboub
 University of Virginia — School of Data Science  
