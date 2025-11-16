@@ -1,0 +1,52 @@
+state,minimum_wage,state_abbr,min_wage_tier
+Alabama,7.25,AL,low
+Alaska,11.91,AK,medium
+Arizona,14.7,AZ,high
+Arkansas,11.0,AR,medium
+California,16.5,CA,high
+Colorado,14.81,CO,high
+Connecticut,16.35,CT,high
+Delaware,15.0,DE,high
+District of Columbia,17.5,DC,high
+Florida,13.0,FL,medium
+Georgia,7.25,GA,low
+Hawaii,14.0,HI,high
+Idaho,7.25,ID,low
+Illinois,15.0,IL,high
+Indiana,7.25,IN,low
+Iowa,7.25,IA,low
+Kansas,7.25,KS,low
+Kentucky,7.25,KY,low
+Louisiana,7.25,LA,low
+Maine,14.65,ME,high
+Maryland,15.0,MD,high
+Massachusetts,15.0,MA,high
+Michigan,10.56,MI,medium
+Minnesota,11.13,MN,medium
+Mississippi,7.25,MS,low
+Missouri,13.75,MO,medium
+Montana,10.55,MT,medium
+Nebraska,13.5,NE,medium
+Nevada,12.0,NV,medium
+New Hampshire,7.25,NH,low
+New Jersey,15.49,NJ,high
+New Mexico,12.0,NM,medium
+New York,16.0,NY,high
+North Carolina,7.25,NC,low
+North Dakota,7.25,ND,low
+Ohio,10.7,OH,medium
+Oklahoma,7.25,OK,low
+Oregon,14.7,OR,high
+Pennsylvania,7.25,PA,low
+Rhode Island,15.0,RI,high
+South Carolina,7.25,SC,low
+South Dakota,11.5,SD,medium
+Tennessee,7.25,TN,low
+Texas,7.25,TX,low
+Utah,7.25,UT,low
+Vermont,14.01,VT,high
+Virginia,12.41,VA,medium
+Washington,16.66,WA,high
+West Virginia,8.75,WV,low
+Wisconsin,7.25,WI,low
+Wyoming,7.25,WY,low
