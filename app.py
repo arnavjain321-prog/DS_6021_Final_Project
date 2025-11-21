@@ -265,7 +265,8 @@ app.layout = dbc.Container([
                         ]],
                         value="poverty_rate"
                     ),
-                    dcc.Graph(id="eda-hist-fig")
+                    dcc.Graph(id="eda-hist-fig", style={"height": "450px"})
+
                 ], width=6),
 
                 dbc.Col([
@@ -284,24 +285,26 @@ app.layout = dbc.Container([
                         ]],
                         value="participants_per_1000"
                     ),
-                    dcc.Graph(id="eda-scatter-fig")
+                    dcc.Graph(id="eda-scatter-fig", style={"height": "450px"})
+
                 ], width=6),
             ]),
 
-            html.Br(),
-            html.H4("Benefits per Person by SNAP Policy Class"),
-            dcc.Graph(
-                figure=px.box(
-                    df,
-                    x="snap_policy_class",
-                    y="benefits_per_person",
-                    title="Benefits per Person by SNAP Policy Class"
-                ).update_layout(
-                    height=400,
-                    margin=dict(t=40, b=40, l=40, r=20)
-                )
-            )
-        ]),
+        html.Br(),
+        html.H4("Benefits per Person by SNAP Policy Class"),
+        dcc.Graph(
+            figure=px.box(
+                df,
+                x="snap_policy_class",
+                y="benefits_per_person",
+                title="Benefits per Person by SNAP Policy Class"
+            ).update_layout(
+                height=400,
+                margin=dict(t=40, b=40, l=40, r=20)
+            ),
+            style={"height": "450px"}
+        )
+    ]),
 
         # --------- TAB 2: Regression ---------
         dbc.Tab(label="Regression", children=[
@@ -356,13 +359,14 @@ app.layout = dbc.Container([
                 ], width=4),
                 dbc.Col([
                     html.H5("Logistic Regression – Confusion Matrix (Test Set)"),
-                    dcc.Graph(figure=cm_log_fig)
+                    dcc.Graph(figure=cm_log_fig, style={"height": "450px"})
+
                 ], width=8),
             ])
         ]),
 
         # --------- TAB 4: Clustering / PCA ---------
-        dbc.Tab(label="Clustering & PCA", children=[
+        dbc.Tab(label="Clustering / PCA", children=[
             html.Br(),
             html.H4("K-means Clustering (k=3)"),
             dcc.Graph(figure=fig_kmeans),
