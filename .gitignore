@@ -1,2 +1,4 @@
 git rm --cached final_dc.csv
 git rm --cached grace_.ipynb
+git add .
+git commit -m
