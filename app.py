@@ -130,6 +130,10 @@ fig_reg_scatter.add_trace(
         line=dict(dash="dash")
     )
 )
+fig_reg_scatter.update_layout(
+    height=400,
+    margin=dict(t=40, b=40, l=40, r=20)
+)
 
 # =====================================
 # CLASSIFICATION MODELS: Logistic, KNN, MLP
@@ -154,6 +158,10 @@ cm_log_fig = px.imshow(
     text_auto=True,
     labels=dict(x="Predicted", y="Actual", color="Count"),
     title="Confusion Matrix – Logistic Regression"
+)
+cm_log_fig.update_layout(
+    height=400,
+    margin=dict(t=40, b=40, l=40, r=20)
 )
 
 # KNN
@@ -195,6 +203,10 @@ fig_kmeans = px.scatter(
     hover_name="state",
     title="K-means Clusters (k=3) – Poverty vs Participants per 1000"
 )
+fig_kmeans.update_layout(
+    height=400,
+    margin=dict(t=40, b=40, l=40, r=20)
+)
 
 pca = PCA(n_components=2)
 X_pca = pca.fit_transform(X_cluster_scaled)
@@ -214,6 +226,10 @@ fig_pca = px.scatter(
     symbol="cluster_k3",
     hover_name="state",
     title=f"PCA (2D) – Explained variance: {pca.explained_variance_ratio_.sum():.2f}"
+)
+fig_pca.update_layout(
+    height=400,
+    margin=dict(t=40, b=40, l=40, r=20)
 )
 
 # =====================================
@@ -280,6 +296,9 @@ app.layout = dbc.Container([
                     x="snap_policy_class",
                     y="benefits_per_person",
                     title="Benefits per Person by SNAP Policy Class"
+                ).update_layout(
+                    height=400,
+                    margin=dict(t=40, b=40, l=40, r=20)
                 )
             )
         ]),
@@ -387,6 +406,10 @@ def update_hist(var):
         nbins=10,
         title=f"Histogram of {var}"
     )
+    fig.update_layout(
+        height=400,
+        margin=dict(t=40, b=40, l=40, r=20)
+    )
     return fig
 
 # EDA: scatter
@@ -403,6 +426,10 @@ def update_eda_scatter(xvar, yvar):
         color="snap_policy_class",
         hover_name="state",
         title=f"{yvar} vs {xvar} (colored by SNAP policy class)"
+    )
+    fig.update_layout(
+        height=400,
+        margin=dict(t=40, b=40, l=40, r=20)
     )
     return fig
 
@@ -424,7 +451,6 @@ def update_predictions(state_name):
     classes = log_model.named_steps["model"].classes_
     proba_dict = {c: p for c, p in zip(classes, proba)}
 
-    # Build a nice text/HTML output
     prob_lines = [
         html.Li(f"{cls}: {proba_dict[cls]:.3f}") for cls in sorted(proba_dict.keys())
     ]
@@ -440,11 +466,10 @@ def update_predictions(state_name):
         html.Ul(prob_lines)
     ])
 
-
 # =====================================
 # RUN APP
 # =====================================
-server = app.server
+server = app.server  # for deployment (Render / gunicorn)
 
 if __name__ == "__main__":
     app.run(debug=True)
