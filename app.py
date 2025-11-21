@@ -50,6 +50,9 @@ X = df[num_features + cat_features]
 y_reg = df[target_reg]
 y_clf = df[target_clf]
 
+# Precompute numeric means for use in custom prediction form
+feature_means = df[num_features].mean()
+
 # =====================================
 # PREPROCESSOR (numeric + categorical)
 # =====================================
@@ -266,7 +269,6 @@ app.layout = dbc.Container([
                         value="poverty_rate"
                     ),
                     dcc.Graph(id="eda-hist-fig", style={"height": "450px"})
-
                 ], width=6),
 
                 dbc.Col([
@@ -286,25 +288,24 @@ app.layout = dbc.Container([
                         value="participants_per_1000"
                     ),
                     dcc.Graph(id="eda-scatter-fig", style={"height": "450px"})
-
                 ], width=6),
             ]),
 
-        html.Br(),
-        html.H4("Benefits per Person by SNAP Policy Class"),
-        dcc.Graph(
-            figure=px.box(
-                df,
-                x="snap_policy_class",
-                y="benefits_per_person",
-                title="Benefits per Person by SNAP Policy Class"
-            ).update_layout(
-                height=400,
-                margin=dict(t=40, b=40, l=40, r=20)
-            ),
-            style={"height": "450px"}
-        )
-    ]),
+            html.Br(),
+            html.H4("Benefits per Person by SNAP Policy Class"),
+            dcc.Graph(
+                figure=px.box(
+                    df,
+                    x="snap_policy_class",
+                    y="benefits_per_person",
+                    title="Benefits per Person by SNAP Policy Class"
+                ).update_layout(
+                    height=400,
+                    margin=dict(t=40, b=40, l=40, r=20)
+                ),
+                style={"height": "450px"}
+            )
+        ]),
 
         # --------- TAB 2: Regression ---------
         dbc.Tab(label="Regression", children=[
@@ -334,7 +335,7 @@ app.layout = dbc.Container([
             ]),
             html.Br(),
             html.H5("Actual vs Predicted (Test Set) – Linear Regression"),
-            dcc.Graph(figure=fig_reg_scatter)
+            dcc.Graph(figure=fig_reg_scatter, style={"height": "450px"})
         ]),
 
         # --------- TAB 3: Classification ---------
@@ -360,35 +361,101 @@ app.layout = dbc.Container([
                 dbc.Col([
                     html.H5("Logistic Regression – Confusion Matrix (Test Set)"),
                     dcc.Graph(figure=cm_log_fig, style={"height": "450px"})
-
                 ], width=8),
             ])
         ]),
 
         # --------- TAB 4: Clustering / PCA ---------
-        dbc.Tab(label="Clustering / PCA", children=[
+        dbc.Tab(label="Clustering & PCA", children=[
             html.Br(),
             html.H4("K-means Clustering (k=3)"),
-            dcc.Graph(figure=fig_kmeans),
+            dcc.Graph(figure=fig_kmeans, style={"height": "450px"}),
             html.Br(),
             html.H4("PCA (2D Projection)"),
-            dcc.Graph(figure=fig_pca)
+            dcc.Graph(figure=fig_pca, style={"height": "450px"})
         ]),
 
-        # --------- TAB 5: Predictions ---------
+        # --------- TAB 5: Predictions (Custom Inputs) ---------
         dbc.Tab(label="Predictions", children=[
             html.Br(),
-            html.H4("Model Predictions for a Selected State"),
+            html.H4("Custom Model Predictions"),
 
-            html.Label("Select a state:"),
-            dcc.Dropdown(
-                id="pred-state",
-                options=[{"label": s, "value": s} for s in df["state"].sort_values()],
-                value=df["state"].sort_values().iloc[0],
-                style={"width": "50%"}
-            ),
+            dbc.Row([
+                dbc.Col([
+                    html.Label("Poverty Rate"),
+                    dcc.Slider(5, 35, 1, value=float(feature_means["poverty_rate"]),
+                               id="input-poverty"),
+                    html.Br(),
+
+                    html.Label("Median Household Income"),
+                    dcc.Input(id="input-income", type="number",
+                              value=float(feature_means["median_household_income"])),
+                    html.Br(), html.Br(),
+
+                    html.Label("Grocery Cost Index"),
+                    dcc.Slider(70, 160, 1,
+                               value=float(feature_means["grocery_cost_index"]),
+                               id="input-grocery"),
+                    html.Br(),
+
+                    html.Label("Minimum Wage"),
+                    dcc.Input(id="input-minwage", type="number",
+                              value=float(feature_means["minimum_wage"])),
+                    html.Br(), html.Br(),
+
+                    html.Label("Participants per 1000"),
+                    dcc.Input(id="input-participants", type="number",
+                              value=float(feature_means["participants_per_1000"])),
+                    html.Br(), html.Br(),
+
+                    html.Label("RUCC (Rural-Urban Continuum Code)"),
+                    dcc.Slider(1, 9, 1,
+                               value=int(round(feature_means["RUCC"])),
+                               id="input-rucc"),
+                    html.Br(),
+
+                    html.Label("Population"),
+                    dcc.Input(id="input-pop", type="number",
+                              value=int(feature_means["population"])),
+                ], width=6),
+
+                dbc.Col([
+                    html.Label("Trifecta 2024"),
+                    dcc.Dropdown(
+                        id="input-trifecta",
+                        options=[{"label": x, "value": x} for x in sorted(df["trifecta_2024"].unique())],
+                        value=sorted(df["trifecta_2024"].unique())[0]
+                    ),
+                    html.Br(),
+
+                    html.Label("USDA SNAP Region"),
+                    dcc.Dropdown(
+                        id="input-region",
+                        options=[{"label": x, "value": x} for x in sorted(df["usda_snap_region"].unique())],
+                        value=sorted(df["usda_snap_region"].unique())[0]
+                    ),
+                    html.Br(),
+
+                    html.Label("Minimum Wage Tier"),
+                    dcc.Dropdown(
+                        id="input-tier",
+                        options=[{"label": x, "value": x} for x in sorted(df["min_wage_tier"].unique())],
+                        value=sorted(df["min_wage_tier"].unique())[0]
+                    ),
+                    html.Br(),
+
+                    html.Label("Rural/Urban Category"),
+                    dcc.Dropdown(
+                        id="input-rural",
+                        options=[{"label": x, "value": x} for x in sorted(df["rural_urban_category"].unique())],
+                        value=sorted(df["rural_urban_category"].unique())[0]
+                    ),
+                ], width=6),
+            ]),
+
             html.Br(),
-            html.Div(id="pred-output", style={"fontSize": 18})
+            html.H4("Prediction Output"),
+            html.Div(id="pred-custom-output", style={"fontSize": 18})
         ]),
 
     ])
@@ -437,37 +504,64 @@ def update_eda_scatter(xvar, yvar):
     )
     return fig
 
-# Predictions tab: show regression + classification for selected state
+# Predictions tab: custom inputs
 @app.callback(
-    Output("pred-output", "children"),
-    Input("pred-state", "value")
-)
-def update_predictions(state_name):
-    row = df[df["state"] == state_name].iloc[0:1]
-    X_row = row[num_features + cat_features]
-
-    # Regression prediction (benefits_per_person)
-    reg_pred = linreg_model.predict(X_row)[0]
-
-    # Classification prediction (SNAP policy class)
-    class_pred = log_model.predict(X_row)[0]
-    proba = log_model.predict_proba(X_row)[0]
-    classes = log_model.named_steps["model"].classes_
-    proba_dict = {c: p for c, p in zip(classes, proba)}
-
-    prob_lines = [
-        html.Li(f"{cls}: {proba_dict[cls]:.3f}") for cls in sorted(proba_dict.keys())
+    Output("pred-custom-output", "children"),
+    [
+        Input("input-poverty", "value"),
+        Input("input-income", "value"),
+        Input("input-grocery", "value"),
+        Input("input-minwage", "value"),
+        Input("input-participants", "value"),
+        Input("input-rucc", "value"),
+        Input("input-pop", "value"),
+        Input("input-trifecta", "value"),
+        Input("input-region", "value"),
+        Input("input-tier", "value"),
+        Input("input-rural", "value"),
     ]
+)
+def predict_custom(pov, inc, gro, wage, part, rucc, pop, trifecta, region, tier, rural):
+    # Start from dataset means for all numeric features
+    base = feature_means.to_dict()
+
+    # Override with user inputs
+    base["poverty_rate"] = pov
+    base["median_household_income"] = inc
+    base["grocery_cost_index"] = gro
+    base["minimum_wage"] = wage
+    base["participants_per_1000"] = part
+    base["RUCC"] = rucc
+    base["population"] = pop
+
+    # Create single-row DataFrame
+    row = pd.DataFrame([base])
+
+    # Add categoricals
+    row["trifecta_2024"] = trifecta
+    row["usda_snap_region"] = region
+    row["min_wage_tier"] = tier
+    row["rural_urban_category"] = rural
+
+    # Ensure col order matches training
+    row = row[num_features + cat_features]
+
+    # Regression prediction
+    reg_pred = linreg_model.predict(row)[0]
+
+    # Classification prediction
+    class_pred = log_model.predict(row)[0]
+    proba = log_model.predict_proba(row)[0]
+    classes = log_model.named_steps["model"].classes_
+    prob_dict = {c: p for c, p in zip(classes, proba)}
 
     return html.Div([
-        html.P(f"State: {state_name}"),
-        html.P(f"Actual benefits_per_person: {row[target_reg].values[0]:.2f}"),
-        html.P(f"Predicted benefits_per_person (Linear Regression): {reg_pred:.2f}"),
-        html.Br(),
-        html.P(f"Actual SNAP policy class: {row[target_clf].values[0]}"),
-        html.P(f"Predicted SNAP policy class (Logistic Regression): {class_pred}"),
+        html.P(f"Predicted benefits_per_person: {reg_pred:.2f}"),
+        html.P(f"Predicted SNAP policy class: {class_pred}"),
         html.P("Prediction probabilities:"),
-        html.Ul(prob_lines)
+        html.Ul([
+            html.Li(f"{cls}: {prob_dict[cls]:.3f}") for cls in sorted(prob_dict.keys())
+        ])
     ])
 
 # =====================================
